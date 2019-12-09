@@ -5,6 +5,12 @@ import './beer-list-item.js';
 
 const beers = [
   {
+    alcohol: 6.8,
+    name: 'Affligem Blond',
+    description:
+      'Affligem Blonde, the classic clear blonde abbey ale, with a gentle roundness and 6.8% alcohol. Low on bitterness, it is eminently drinkable.'
+  },
+  {
     alcohol: 8.5,
     name: 'Affligem Tripel',
     description:
@@ -17,6 +23,12 @@ const beers = [
       'A dry but rich flavoured beer with complex fruity and spicy flavours.'
   },
   {
+    alcohol: 11.3,
+    name: 'Rochefort 10',
+    description:
+      'The top product from the Rochefort Trappist brewery. Dark colour, full and very impressive taste. Strong plum, raisin, and black currant palate, with ascending notes of vinousness and other complexities.'
+  },
+  {
     alcohol: 7,
     name: 'Chimay Rouge',
     description:
@@ -24,10 +36,16 @@ const beers = [
   }
 ];
 
+const criteria = [
+  { name: 'name', label: 'Alphabetical' },
+  { name: 'alcohol', label: 'Alcohol content' }
+];
+
 class BeerList extends LitElement {
   constructor() {
     super();
     this.beers = beers;
+    this.criterium = criteria[0].name;
   }
 
   static get styles() {
@@ -41,6 +59,12 @@ class BeerList extends LitElement {
       },
       filterText: {
         type: String
+      },
+      criterium: {
+        type: String
+      },
+      descendingSort: {
+        type: Boolean
       }
     };
   }
@@ -49,10 +73,28 @@ class BeerList extends LitElement {
     this.filterText = this.shadowRoot.querySelector('#search').value;
   }
 
-  _getCurrentBeers() {
+  _currentBeers() {
     return this.beers.filter(beer => {
       return beer.name && beer.name.match(new RegExp(this.filterText, 'i'));
     }).length;
+  }
+
+  _beerSorter(a, b) {
+    var invert = 1;
+    if (this.descendingSort) invert = -1;
+    if (a[this.criterium] === b[this.criterium]) return 0;
+    if (a[this.criterium] < b[this.criterium]) return -1 * invert;
+    if (a[this.criterium] > b[this.criterium]) return 1 * invert;
+  }
+
+  _sortingChanged() {
+    this.criterium = this.shadowRoot.querySelector(
+      '#sort'
+    ).selectedOptions[0].value;
+  }
+
+  _descendingChange() {
+    this.descendingSort = this.shadowRoot.querySelector('#descending').checked;
   }
 
   render() {
@@ -72,6 +114,27 @@ class BeerList extends LitElement {
                 placeholder="Enter search"
                 @input="${this._inputChange}"
               />
+              <label for="sort">
+                Sort by
+              </label>
+              <select
+                id="sort"
+                class="form-control"
+                @change="${this._sortingChanged}"
+              >
+                ${criteria.map(
+                  item =>
+                    html`
+                      <option value="${item.name}"> ${item.label}</option>
+                    `
+                )}
+              </select>
+              <label for="descending">Descending sort</label>
+              <input
+                id="descending"
+                type="checkbox"
+                @change="${this._descendingChange}"
+              />
               <div>Current search: ${this.filterText}</div>
             </div>
           </div>
@@ -85,6 +148,7 @@ class BeerList extends LitElement {
                     beer.name.match(new RegExp(this.filterText, 'i'))
                   );
                 })
+                .sort((a, b) => this._beerSorter(a, b))
                 .map(beer => {
                   return html`
                     <beer-list-item
@@ -95,7 +159,7 @@ class BeerList extends LitElement {
                   `;
                 })}
             </div>
-            <div>Number of beers in list: ${this._getCurrentBeers()}</div>
+            <div>Number of beers in list: ${this._currentBeers}</div>
           </div>
         </div>
       </div>
