@@ -44,8 +44,18 @@ const criteria = [
 class BeerList extends LitElement {
   constructor() {
     super();
-    this.beers = beers;
+    this.beers = [];
     this.criterium = criteria[0].name;
+    this._getData();
+  }
+
+  async _getData() {
+    try {
+      const response = await fetch('./data/beers/beers.json');
+      this.beers = await response.json();
+    } catch (err) {
+      console.log('fetch failed', err);
+    }
   }
 
   static get styles() {
@@ -142,7 +152,9 @@ class BeerList extends LitElement {
             <div class="beers">
               ${this.beers
                 .filter(beer => {
-                  console.log(beer);
+                  console.log(
+                    beer.name.match(new RegExp(this.filterText, 'i'))
+                  );
                   return (
                     beer.name &&
                     beer.name.match(new RegExp(this.filterText, 'i'))
@@ -150,16 +162,20 @@ class BeerList extends LitElement {
                 })
                 .sort((a, b) => this._beerSorter(a, b))
                 .map(beer => {
+                  console.log(beer.img)
                   return html`
                     <beer-list-item
+                      id="${beer.id}"
                       name="${beer.name}"
                       description="${beer.description}"
+                      img="${beer.img}"
+                      alcohol="${beer.alcohol}"
                     >
                     </beer-list-item>
                   `;
                 })}
             </div>
-            <div>Number of beers in list: ${this._currentBeers}</div>
+            <div>Number of beers in list: ${this._currentBeers()}</div>
           </div>
         </div>
       </div>
