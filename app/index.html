@@ -3,29 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <title>LitElement Beer Gallery</title>
+    <script type="module" src="./elements/beer-list-item.js"></script>
   </head>
 
   <body>
     <div class="container">
-      <ul>
-        <li>
-          <span>Affligem Blond</span>
-          <p>
-            Affligem Blonde, the classic clear blonde abbey ale, with a gentle
-            roundness and 6.8% alcohol. Low on bitterness, it is eminently
-            drinkable.
-          </p>
-        </li>
-        <li>
-          <span>Affligem Tripel</span>
-          <p>
-            The king of the abbey beers. It is amber-gold and pours with a deep
-            head and original aroma, delivering a complex, full bodied flavour.
-            Pure enjoyment! Secondary fermentation in the bottle.
-          </p>
-          <p>Total number of beers: 2</p>
-        </li>
-      </ul>
+      <beer-list-item
+        name="Affligem Blond"
+        description="Affligem Blonde, the classic clear blonde abbey ale, with a gentle roundness and 6.8%..."
+      ></beer-list-item>
+      <beer-list-item
+        name="Affligem Tripel"
+        description="The king of the abbey beers. It is amber-gold and pours with a deep head and original..."
+      ></beer-list-item>
     </div>
   </body>
 </html>
